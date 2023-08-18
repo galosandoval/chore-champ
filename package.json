@@ -7,6 +7,7 @@
     "start": "remix-serve build",
     "typecheck": "tsc",
     "migrate": "npx drizzle-kit generate:pg --schema=./app/lib/db/schema.ts",
+    "push": "npx drizzle-kit push:pg",
     "studio": "npx drizzle-kit studio"
   },
   "dependencies": {

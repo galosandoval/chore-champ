@@ -1,5 +1,5 @@
 import { relations } from 'drizzle-orm'
-import { text, pgTable, primaryKey } from 'drizzle-orm/pg-core'
+import { text, pgTable, primaryKey, pgEnum } from 'drizzle-orm/pg-core'
 import { createInsertSchema } from 'drizzle-zod'
 import { z } from 'zod'
 
@@ -7,68 +7,116 @@ import { z } from 'zod'
  * tables
  */
 
-export const user = pgTable('user', {
+export const users = pgTable('users', {
   id: text('cuid').primaryKey(),
   name: text('name'),
   email: text('email').unique().notNull(),
   password: text('password').notNull(),
-  householdId: text('household_id').references(() => household.id),
+  householdId: text('household_id').references(() => households.id),
   createdAt: text('created_at').default(new Date().toISOString()),
   updatedAt: text('updated_at').default(new Date().toISOString())
 })
 
-export const household = pgTable('household', {
+export const usersRelations = relations(users, ({ one, many }) => ({
+  household: one(households, {
+    references: [households.id],
+    fields: [users.householdId]
+  }),
+  usersToChores: many(usersToChores)
+}))
+
+export const households = pgTable('households', {
   id: text('cuid').primaryKey(),
   name: text('name').notNull(),
   createdAt: text('created_at').default(new Date().toISOString()),
   updatedAt: text('updated_at').default(new Date().toISOString())
 })
 
-export const area = pgTable('area', {
+export const householdRelations = relations(households, ({ many }) => ({
+  users: many(users),
+  areas: many(areas)
+}))
+
+export const areas = pgTable('areas', {
   id: text('cuid').primaryKey(),
   name: text('name').notNull(),
-  householdId: text('household_id').references(() => household.id),
+  householdId: text('household_id').references(() => households.id),
   createdAt: text('created_at').default(new Date().toISOString()),
   updatedAt: text('updated_at').default(new Date().toISOString())
 })
 
-export const chore = pgTable('chore', {
+export const areasRelations = relations(areas, ({ one, many }) => ({
+  household: one(households, {
+    fields: [areas.householdId],
+    references: [households.id]
+  }),
+  areasToChores: many(areasToChores)
+}))
+
+export const frequencyEnum = pgEnum('frequency', [
+  'daily',
+  'weekly',
+  'bi-weekly',
+  'monthly',
+  'custom'
+])
+
+export const chores = pgTable('chores', {
   id: text('cuid').primaryKey(),
   name: text('name').notNull(),
   description: text('description'),
-  householdId: text('household_id').references(() => household.id),
+  dueAt: text('due_at'),
+  frequency: frequencyEnum('frequency'),
+  customFrequency: text('custom_frequency'),
   createdAt: text('created_at').default(new Date().toISOString()),
   updatedAt: text('updated_at').default(new Date().toISOString())
 })
 
-export const session = pgTable('session', {
+export const choresRelations = relations(chores, ({ many }) => ({
+  usersToChores: many(usersToChores),
+
+  areasToChores: many(areasToChores)
+}))
+
+export const sessions = pgTable('sessions', {
   id: text('cuid').primaryKey(),
-  userId: text('user_id').references(() => user.id),
+  userId: text('user_id').references(() => users.id),
   expiresAt: text('expires_at')
 })
 
 export const areasToChores = pgTable(
   'areas_to_chores',
   {
-    areaId: text('area_cuid').references(() => area.id),
-    choreId: text('chore_id').references(() => chore.id),
+    areaId: text('area_id').references(() => areas.id),
+    choreId: text('chore_id').references(() => chores.id),
     createdAt: text('created_at').default(new Date().toISOString()),
     updatedAt: text('updated_at').default(new Date().toISOString())
   },
   (t) => ({
-    id: primaryKey(t.areaId, t.choreId)
+    pk: primaryKey(t.areaId, t.choreId)
   })
 )
+
+export const areasToChoresRelations = relations(areasToChores, ({ one }) => ({
+  chore: one(areas, {
+    fields: [areasToChores.areaId],
+    references: [areas.id]
+  }),
+  area: one(chores, {
+    fields: [areasToChores.choreId],
+    references: [chores.id]
+  })
+}))
 
 export const usersToChores = pgTable(
   'users_to_chores',
   {
     userId: text('user_id')
       .notNull()
-      .references(() => user.id),
+      .references(() => users.id),
     choreId: text('chore_id')
       .notNull()
-      .references(() => chore.id),
+      .references(() => chores.id),
     createdAt: text('created_at').default(new Date().toISOString()),
     updatedAt: text('updated_at').default(new Date().toISOString())
   },
@@ -77,59 +125,14 @@ export const usersToChores = pgTable(
   })
 )
 
-/**
- * relations
- */
-
-export const usersRelations = relations(user, ({ one, many }) => ({
-  household: one(household, {
-    references: [household.id],
-    fields: [user.householdId]
-  }),
-  usersToChores: many(usersToChores)
-}))
-
-export const householdRelations = relations(household, ({ many }) => ({
-  users: many(user),
-  areas: many(area)
-}))
-
-export const areaRelation = relations(area, ({ one, many }) => ({
-  household: one(household, {
-    fields: [area.householdId],
-    references: [household.id]
-  }),
-  areasToChores: many(areasToChores)
-}))
-
-export const areasToChoresRelations = relations(areasToChores, ({ one }) => ({
-  chore: one(area, {
-    fields: [areasToChores.areaId],
-    references: [area.id]
-  }),
-  user: one(chore, {
-    fields: [areasToChores.choreId],
-    references: [chore.id]
-  })
-}))
-
-export const choreRelations = relations(chore, ({ many, one }) => ({
-  usersToChores: many(usersToChores),
-  household: one(household, {
-    fields: [chore.householdId],
-    references: [household.id]
-  }),
-  areasToChores: many(areasToChores)
-}))
-
-export const usersToChoresRelation = relations(usersToChores, ({ one }) => ({
-  chore: one(chore, {
+export const usersToChoresRelations = relations(usersToChores, ({ one }) => ({
+  chore: one(chores, {
     fields: [usersToChores.choreId],
-    references: [chore.id]
+    references: [chores.id]
   }),
-  user: one(user, {
+  user: one(users, {
     fields: [usersToChores.userId],
-    references: [user.id]
+    references: [users.id]
   })
 }))
 
@@ -137,7 +140,7 @@ export const usersToChoresRelation = relations(usersToChores, ({ one }) => ({
  * schemas
  */
 
-export const insertUserSchema = createInsertSchema(user, {
+export const insertUserSchema = createInsertSchema(users, {
   email: (schema) => schema.email.email(),
   password: (schema) => schema.password.min(8).max(50),
   id: (schema) => schema.id.optional()
@@ -154,7 +157,7 @@ export const registerSchema = insertUserSchema
 
 export type User = z.infer<typeof insertUserSchema>
 
-export const insertHouseholdSchema = createInsertSchema(household, {
+export const insertHouseholdSchema = createInsertSchema(households, {
   id: (schema) => schema.id.optional(),
   name: (schema) =>
     schema.name
@@ -162,7 +165,7 @@ export const insertHouseholdSchema = createInsertSchema(household, {
       .max(50, 'Name must be less than 50 characters')
 })
 
-export const insertAreaSchema = createInsertSchema(area, {
+export const insertAreaSchema = createInsertSchema(areas, {
   id: (schema) => schema.id.optional(),
   name: (schema) =>
     schema.name
@@ -170,7 +173,7 @@ export const insertAreaSchema = createInsertSchema(area, {
       .max(50, 'Name must be less than 50 characters')
 })
 
-export const insertChoreSchema = createInsertSchema(chore, {
+export const insertChoreSchema = createInsertSchema(chores, {
   id: (schema) => schema.id.optional(),
   name: (schema) =>
     schema.name
@@ -180,7 +183,7 @@ export const insertChoreSchema = createInsertSchema(chore, {
     schema.description.max(50, 'Description must be less than 50 characters')
 })
 
-export const insertHouseholdAreaAndChoreSchema = z.object({
+export const insertHouseholdsAreasAndChoresSchema = z.object({
   householdName: z
     .string()
     .min(1, 'Name must be more than 1 character')

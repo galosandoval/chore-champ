@@ -1,5 +1,10 @@
 import { createId } from '@paralleldrive/cuid2'
-import { Form } from '@remix-run/react'
+import {
+  Form,
+  isRouteErrorResponse,
+  useActionData,
+  useRouteError
+} from '@remix-run/react'
 import { json, type ActionArgs, type V2_MetaFunction } from '@vercel/remix'
 import { Label } from 'app/components/ui/label'
 import { Button } from '~/components/ui/button'
@@ -20,13 +25,11 @@ import {
   SelectValue
 } from '~/components/ui/select'
 import { db } from '~/lib/db/init'
-import { area, areasToChores, chore, household } from '~/lib/db/schema'
+import { areas, areasToChores, chores, households } from '~/lib/db/schema'
 
 export const meta: V2_MetaFunction = () => [{ title: 'New Remix App' }]
 
 export async function action({ request }: ActionArgs) {
-  console.log('hellooaoaoaoaoa')
-
   // const formData = await request.formData()
   // const data = insertHouseholdAreaAndChoreSchema.parse(
   //   Object.fromEntries(formData.entries())
@@ -60,7 +63,7 @@ export async function action({ request }: ActionArgs) {
 
   const householdId = createId()
   const newHousehold = await db
-    .insert(household)
+    .insert(households)
     .values({ name: householdName, id: householdId })
     .returning()
 
@@ -73,12 +76,13 @@ export async function action({ request }: ActionArgs) {
     ([areaName, area]) => {
       return {
         id: area.id,
-        name: areaName
+        name: areaName,
+        householdId
       }
     }
   )
 
-  const newAreas = await db.insert(area).values(areasToInsert).returning()
+  const newAreas = await db.insert(areas).values(areasToInsert).returning()
 
   if (!newAreas || newAreas.length === 0) {
     throw new Error('Could not create areas')
@@ -92,7 +96,7 @@ export async function action({ request }: ActionArgs) {
       }
     }
   )
-  const newChores = await db.insert(chore).values(choresToInsert).returning()
+  const newChores = await db.insert(chores).values(choresToInsert).returning()
 
   if (!newChores || newChores.length === 0) {
     throw new Error('Could not create chores')
@@ -123,6 +127,10 @@ export async function action({ request }: ActionArgs) {
 }
 
 export default function Index() {
+  const form = useActionData()
+
+  console.log('form', form)
+
   return (
     <Form className='h-full grid place-items-center' method='post'>
       <Card className=''>
@@ -163,4 +171,30 @@ export default function Index() {
       </Card>
     </Form>
   )
+}
+
+export function ErrorBoundary() {
+  const error = useRouteError()
+
+  if (isRouteErrorResponse(error)) {
+    return (
+      <div>
+        <h1>
+          {error.status} {error.statusText}
+        </h1>
+        <p>{error.data}</p>
+      </div>
+    )
+  } else if (error instanceof Error) {
+    return (
+      <div>
+        <h1>Error</h1>
+        <p>{error.message}</p>
+        <p>The stack trace is:</p>
+        <pre>{error.stack}</pre>
+      </div>
+    )
+  } else {
+    return <h1>Unknown Error</h1>
+  }
 }
