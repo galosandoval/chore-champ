@@ -53,13 +53,15 @@ export const areasRelations = relations(areas, ({ one, many }) => ({
   areasToChores: many(areasToChores)
 }))
 
-export const frequencyEnum = pgEnum('frequency', [
+const frequencyOptions = [
   'daily',
   'weekly',
   'bi-weekly',
   'monthly',
   'custom'
-])
+] as const
+
+export const frequencyEnum = pgEnum('frequency', frequencyOptions)
 
 export const chores = pgTable('chores', {
   id: text('cuid').primaryKey(),
@@ -188,14 +190,36 @@ export const insertHouseholdsAreasAndChoresSchema = z.object({
     .string()
     .min(1, 'Name must be more than 1 character')
     .max(50, 'Name must be less than 50 characters'),
-  areaNames: z
-    .string()
-    .min(1, 'Name must be more than 1 character')
-    .max(50, 'Name must be less than 50 characters')
-    .array(),
-  choreNames: z
-    .string()
-    .min(1, 'Name must be more than 1 character')
-    .max(50, 'Name must be less than 50 characters')
+
+  areas: z.record(
+    z
+      .string()
+      .min(1, 'Name must be more than 1 character')
+      .max(50, 'Name must be less than 50 characters'),
+    z
+      .string()
+      .min(1, 'Name must be more than 1 character')
+      .max(50, 'Name must be less than 50 characters')
+      .array()
+  ),
+  chores: z
+    .object({
+      name: z
+        .string()
+        .min(1, 'Name must be more than 1 character')
+        .max(50, 'Must not be more than 50 characters')
+        .optional(),
+      description: z
+        .string()
+        .max(255, 'Description must be less than 50 characters')
+        .optional(),
+      dueAt: z.string().optional(),
+      frequency: z.enum(frequencyOptions).optional(),
+      customFrequency: z.string().optional()
+    })
     .array()
 })
+
+export type InsertHouseholdsAreasAndChores = z.infer<
+  typeof insertHouseholdsAreasAndChoresSchema
+>
