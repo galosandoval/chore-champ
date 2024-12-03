@@ -32,6 +32,15 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "8ef8aa13-8663-45c9-8bb0-f36a808ec564"
+      }
+    },
+    "owner": "galosandoval"
   }
 }
