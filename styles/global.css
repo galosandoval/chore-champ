@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+@layer base {
+  :root {
+    --background: #FFFFFF; /* Pure white */
+    --foreground: #333333; /* Charcoal */
+    --card: #FFFFFF; /* Pure white */
+    --card-foreground: #333333; /* Charcoal */
+    --popover: #FFFFFF; /* Pure white */
+    --popover-foreground: #333333; /* Charcoal */
+    --primary: #50C878; /* Emerald green */
+    --primary-foreground: #FAFAFA; /* Off-white */
+    --secondary: #F5F5F5; /* Light gray */
+    --secondary-foreground: #333333; /* Charcoal */
+    --muted: #F5F5F5; /* Light gray */
+    --muted-foreground: #767676; /* Medium gray */
+    --accent: #FFD700; /* Goldenrod */
+    --accent-foreground: #333333; /* Charcoal */
+    --destructive: #CC3333; /* Deep red */
+    --destructive-foreground: #FAFAFA; /* Off-white */
+    --border: #E6E6E6; /* Light border gray */
+    --input: #E6E6E6; /* Light border gray */
+    --ring: #50C878; /* Emerald green */
+    --radius: 0.5rem;
+    --chart-1: #FF6F61; /* Coral */
+    --chart-2: #228B22; /* Forest green */
+    --chart-3: #006D77; /* Deep teal */
+    --chart-4: #FFD700; /* Goldenrod */
+    --chart-5: #FFB400; /* Mustard yellow */
+  }
+
+  /* .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  } */
+}
