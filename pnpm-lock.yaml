@@ -8,6 +8,9 @@ dependencies:
   '@expo/vector-icons':
     specifier: ^14.0.2
     version: 14.0.4
+  '@react-native-google-signin/google-signin':
+    specifier: ^13.1.0
+    version: 13.1.0(expo@52.0.14)(react-dom@18.3.1)(react-native@0.76.3)(react@18.3.1)
   '@react-navigation/native':
     specifier: ^7.0.0
     version: 7.0.13(react-native@0.76.3)(react@18.3.1)
@@ -2148,6 +2151,25 @@ packages:
       '@babel/runtime': 7.26.0
       '@radix-ui/react-compose-refs': 1.0.0(react@18.3.1)
       react: 18.3.1
+    dev: false
+
+  /@react-native-google-signin/google-signin@13.1.0(expo@52.0.14)(react-dom@18.3.1)(react-native@0.76.3)(react@18.3.1):
+    resolution: {integrity: sha512-C2/sqb0/s0c+Dwc/mykASZsRuHxGqn7SFrCxCY9D8p8IOQO05haInhCc7lzraJshRixGva5c/4usQZ71HMYSEQ==}
+    peerDependencies:
+      expo: '>=50.0.0'
+      react: '*'
+      react-dom: '*'
+      react-native: '*'
+    peerDependenciesMeta:
+      expo:
+        optional: true
+      react-dom:
+        optional: true
+    dependencies:
+      expo: 52.0.14(@babel/core@7.26.0)(@babel/preset-env@7.26.0)(react-native@0.76.3)(react@18.3.1)
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      react-native: 0.76.3(@babel/core@7.26.0)(@babel/preset-env@7.26.0)(@types/react@18.3.12)(react@18.3.1)
     dev: false
 
   /@react-native/assets-registry@0.76.3:
