@@ -1,13 +1,9 @@
-import { FlatList, StyleSheet } from "react-native";
+import { Button, FlatList, StyleSheet } from "react-native";
 import { Text, View } from "@/components/Themed";
 import { LinearGradient } from "expo-linear-gradient";
 import { cn } from "@/lib/cn";
-import {
-  GoogleOneTapSignIn,
-  statusCodes,
-  type OneTapUser,
-} from "@react-native-google-signin/google-signin";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
+import signIn from "../sign-in";
 
 export default function TabOneScreen() {
   return (
@@ -16,7 +12,7 @@ export default function TabOneScreen() {
       <Text className="text-2xl font-semibold self-start py-4">
         Good morning, Galo!
       </Text>
-
+      <Button title="Sign in" onPress={signIn} />
       <ProgressIndicators />
       <WeekIndicator />
 

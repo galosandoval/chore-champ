@@ -31,12 +31,6 @@
           <string>com.galosandoval.chorechamp</string>
         </array>
       </dict>
-      <dict>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>com.googleusercontent.apps.727098911689-bnj85fcdu2j9ta8n7fh8u6nngec89oti</string>
-        </array>
-      </dict>
     </array>
     <key>CFBundleVersion</key>
     <string>1</string>
