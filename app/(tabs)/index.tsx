@@ -2,6 +2,11 @@ import { FlatList, StyleSheet } from "react-native";
 import { Text, View } from "@/components/Themed";
 import { LinearGradient } from "expo-linear-gradient";
 import { cn } from "@/lib/cn";
+import {
+  GoogleOneTapSignIn,
+  statusCodes,
+  type OneTapUser,
+} from "@react-native-google-signin/google-signin";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 
 export default function TabOneScreen() {
